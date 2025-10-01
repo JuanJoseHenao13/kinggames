@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles */
+.nav-link {
+    @apply text-white hover:text-dorado transition-colors duration-200 px-3 py-2 rounded-md text-sm font-medium;
+}
+
+.btn-primary {
+    @apply bg-azul-rey text-white hover:bg-dorado hover:text-negro transition-colors duration-200 font-bold py-2 px-4 rounded;
+}
+
+.card {
+    @apply bg-white dark:bg-gris-oscuro rounded-lg shadow-lg overflow-hidden border-2 border-dorado;
+}
+
+/* Container spacing fixes */
+.container-spacing {
+    @apply px-4 sm:px-6 lg:px-8;
+}
+
+.product-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8;
+}
+
+/* Usando los colores personalizados */
+.header {
+    @apply bg-negro-oscuro text-white py-4 px-8; /* Fondo negro-oscuro en la parte superior (por ejemplo, encabezado) */
+}
+
+.card-custom {
+    @apply bg-marron-claro text-white border-2 border-marron-oscuro shadow-marron-claro; /* Fondo marrón-claro con sombra marrón-claro */
+}
+
+.section-background {
+    @apply bg-marron-oscuro text-white py-8 px-6; /* Fondo marrón-oscuro en una sección */
+}
+
+.btn-custom {
+    @apply bg-negro-oscuro text-white hover:bg-marron-oscuro transition-colors duration-200 py-2 px-4 rounded; /* Fondo negro-oscuro en un botón */
+}
+
+
