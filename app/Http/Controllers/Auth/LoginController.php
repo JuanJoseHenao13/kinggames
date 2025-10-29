@@ -17,6 +17,8 @@ class LoginController extends Controller
      */
     protected function redirectTo()
     {
+        session(['welcome_user' => auth()->user()->nombre]);
+
         if (auth()->user()->rol === 'cliente') {
             return route('cliente.dashboard');
         }

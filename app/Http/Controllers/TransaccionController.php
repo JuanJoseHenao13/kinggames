@@ -9,6 +9,7 @@ use App\Models\Producto;
 use App\Models\DetalleTransaccion;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use PDF; // Add this import for dompdf
 
 class TransaccionController extends Controller
 {
@@ -18,14 +19,37 @@ class TransaccionController extends Controller
             $transacciones = Transaccion::where('id_usuario', auth()->id())
                 ->with(['usuario', 'proveedor', 'detalleTransacciones.producto'])
                 ->orderBy('created_at', 'desc')
-                ->get();
+                ->paginate(10);
             return view('cliente.transacciones.index', compact('transacciones'));
         }
 
-        $transacciones = Transaccion::with(['usuario', 'proveedor', 'detalleTransacciones.producto'])
-            ->orderBy('created_at', 'desc')
-            ->get();
-        return view('transacciones.index', compact('transacciones'));
+        $query = Transaccion::with(['usuario', 'proveedor', 'detalleTransacciones.producto']);
+
+        // Filters
+        if ($request->filled('usuario_id')) {
+            $query->where('id_usuario', $request->usuario_id);
+        }
+
+        if ($request->filled('producto_id')) {
+            $query->whereHas('detalleTransacciones', function ($q) use ($request) {
+                $q->where('id_producto', $request->producto_id);
+            });
+        }
+
+        if ($request->filled('fecha_inicio')) {
+            $query->whereDate('created_at', '>=', $request->fecha_inicio);
+        }
+
+        if ($request->filled('fecha_fin')) {
+            $query->whereDate('created_at', '<=', $request->fecha_fin);
+        }
+
+        $transacciones = $query->orderBy('created_at', 'desc')->paginate(10);
+
+        $usuarios = Usuario::all();
+        $productos = Producto::all();
+
+        return view('transacciones.index', compact('transacciones', 'usuarios', 'productos'));
     }
 
     public function create()
@@ -94,7 +118,7 @@ class TransaccionController extends Controller
     public function show($transaccionId)
     {
         // Find the transaction manually
-        $transaccion = Transaccion::with(['detalleTransacciones.producto', 'usuario', 'proveedor'])
+        $transaccion = Transaccion::with(['detalleTransacciones.producto.proveedor', 'detalleTransacciones.producto.categoria', 'usuario', 'proveedor'])
             ->findOrFail($transaccionId);
 
         // Check if user is authenticated
@@ -146,5 +170,37 @@ class TransaccionController extends Controller
             DB::rollback();
             return back()->withErrors(['error' => 'Error al eliminar la transacción: ' . $e->getMessage()]);
         }
+    }
+
+    // New method to generate PDF ticket
+    public function exportPdf($transaccionId)
+    {
+        $transaccion = Transaccion::with(['detalleTransacciones.producto.proveedor', 'usuario', 'proveedor'])
+            ->findOrFail($transaccionId);
+
+        $pdf = PDF::loadView('cliente.transacciones.ticket', compact('transaccion'));
+        return $pdf->download('ticket_compra_' . $transaccion->id_transaccion . '.pdf');
+    }
+
+    public function pdf(Transaccion $transaccion)
+    {
+        $transaccion->load(['detalleTransacciones.producto.proveedor', 'detalleTransacciones.producto.categoria', 'usuario', 'proveedor']);
+
+        $pdf = PDF::loadView('cliente.transacciones.ticket', compact('transaccion'));
+        return $pdf->download('transaccion_' . $transaccion->id_transaccion . '.pdf');
+    }
+
+    public function searchUsuarios(Request $request)
+    {
+        $query = $request->get('q', '');
+        $usuarios = Usuario::where('nombre', 'like', '%' . $query . '%')->get(['id_usuario', 'nombre']);
+        return response()->json($usuarios);
+    }
+
+    public function searchProductos(Request $request)
+    {
+        $query = $request->get('q', '');
+        $productos = Producto::where('nombre', 'like', '%' . $query . '%')->get(['id_producto', 'nombre']);
+        return response()->json($productos);
     }
 }

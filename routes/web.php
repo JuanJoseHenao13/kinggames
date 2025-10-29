@@ -45,8 +45,8 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Rutas de administración
-Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/admin', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::resource('usuarios', UsuarioController::class);
     Route::resource('proveedores', ProveedorController::class)->parameters([
         'proveedores' => 'proveedor',
@@ -55,16 +55,28 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::resource('productos', ProductoController::class)->except(['index']);
     Route::resource('inventarios', InventarioController::class);
     Route::get('inventarios/create/{productoId}', [InventarioController::class, 'create'])->name('inventarios.create.with.product');
+    Route::get('transacciones/search-usuarios', [TransaccionController::class, 'searchUsuarios'])->name('transacciones.search.usuarios');
+    Route::get('transacciones/search-productos', [TransaccionController::class, 'searchProductos'])->name('transacciones.search.productos');
     Route::resource('transacciones', TransaccionController::class);
+    Route::get('transacciones/{transaccion}/pdf', [TransaccionController::class, 'pdf'])->name('transacciones.pdf');
 });
 
-Route::get('/productos/{producto}', [ProductoController::class, 'show'])->name('productos.show');
+Route::get('/productos/{producto}', [ProductoController::class, 'show'])->name('productos.show.public');
 
 Route::middleware(['auth', 'cliente'])->prefix('cliente')->name('cliente.')->group(function () {
     Route::get('dashboard', [ClienteDashboardController::class, 'dashboard'])->name('dashboard');
     Route::get('productos', [ProductoController::class, 'index'])->name('productos.index');
+    Route::get('productos/{producto}', [ProductoController::class, 'showCliente'])->name('productos.show');
     Route::get('carrito', [CartController::class, 'index'])->name('cart.index');
+    Route::patch('carrito/update/{producto}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('carrito/remove/{producto}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
     Route::get('historial', [TransaccionController::class, 'index'])->name('transacciones.index');
     Route::get('historial/{transaccion}', [TransaccionController::class, 'show'])->name('transacciones.show');
+    Route::get('historial/{transaccion}/pdf', [TransaccionController::class, 'exportPdf'])->name('transacciones.pdf');
     Route::get('cart-count', [CartController::class, 'getCartCount'])->name('cart.count');
+
+    // Perfil cliente
+    Route::get('perfil', [ClienteDashboardController::class, 'perfil'])->name('perfil');
+    Route::post('perfil', [ClienteDashboardController::class, 'updatePerfil'])->name('perfil.update');
 });

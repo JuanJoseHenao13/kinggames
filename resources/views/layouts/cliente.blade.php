@@ -5,9 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard - KinGGameS')</title>
+
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <style>
+        .font-gaming { font-family: 'Orbitron', sans-serif; }
+        .font-inter { font-family: 'Inter', sans-serif; }
+
+        /* Gradient animations */
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .animated-gradient {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 25%, #06b6d4 50%, #0891b2 75%, #0e7490 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 8s ease infinite;
+        }
+
+        .gaming-gradient {
+            background: linear-gradient(135deg, #1e40af 0%, #0891b2 100%);
+        }
+
+        .neon-border {
+            box-shadow: 0 0 10px rgba(30, 64, 175, 0.5), 0 0 20px rgba(30, 64, 175, 0.3);
+        }
+
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Glassmorphism effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .dark .glass {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Glow effect on hover */
+        .glow-on-hover {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .glow-on-hover:hover {
+            box-shadow: 0 0 20px rgba(30, 64, 175, 0.6);
+        }
+
+        /* Cart badge pulse */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .cart-badge-pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+    </style>
 </head>
 <body class="h-full bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
     <div class="min-h-full">
@@ -55,6 +130,13 @@
                                         Mis Compras
                                     </a>
                                 </li>
+                                <li>
+                                    <a href="{{ route('cliente.perfil') }}"
+                                       class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold {{ request()->routeIs('cliente.perfil') ? 'bg-blue-50 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                                        <i class="bi bi-person h-6 w-6 shrink-0"></i>
+                                        Perfil
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                     </ul>
@@ -86,14 +168,14 @@
                             Sitio
                         </a>
                         <!-- Logout -->
-                        <form action="{{ route('logout') }}" method="POST" class="inline">
+                        <form action="{{ route('logout') }}" method="POST" class="inline" id="logout-form">
                             @csrf
-                            <button type="submit"
-                                    class="inline-flex items-center gap-x-1.5 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
-                                <i class="bi bi-box-arrow-right -ml-0.5 h-4 w-4"></i>
-                                Logout
-                            </button>
                         </form>
+                        <button type="button" onclick="confirmLogout(event)"
+                                class="inline-flex items-center gap-x-1.5 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
+                            <i class="bi bi-box-arrow-right -ml-0.5 h-4 w-4"></i>
+                            Logout
+                        </button>
                     </div>
                 </div>
             </div>
@@ -106,6 +188,8 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @stack('scripts')
     <script>
         // Dark mode toggle
         const darkModeToggle = document.getElementById('dark-mode-toggle');
@@ -117,6 +201,91 @@
             html.classList.toggle('dark', !isDark);
             localStorage.setItem('theme', !isDark ? 'dark' : 'light');
         });
+
+        // SweetAlert para mensajes de sesión
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: '{{ session("success") }}',
+                showConfirmButton: false,
+                timer: 3000,
+                background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000',
+                iconColor: '#10b981',
+                toast: true,
+                position: 'top-end',
+                timerProgressBar: true,
+                customClass: {
+                    popup: 'rounded-xl shadow-2xl',
+                }
+            });
+        @endif
+
+        @if(session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ session("error") }}',
+                background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000',
+                confirmButtonColor: '#3b82f6',
+                customClass: {
+                    popup: 'rounded-xl shadow-2xl',
+                }
+            });
+        @endif
+
+        // Welcome notification
+        @if(session('welcome_user'))
+            Swal.fire({
+                title: '¡Bienvenido a KinGGameS!',
+                text: 'Hola {{ session("welcome_user") }}, ¡disfruta de tu experiencia gaming!',
+                icon: 'success',
+                confirmButtonColor: '#10b981',
+                background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000',
+                customClass: {
+                    popup: 'rounded-xl shadow-2xl',
+                    confirmButton: 'px-6 py-3 rounded-xl font-bold'
+                }
+            });
+            @php
+                session()->forget('welcome_user');
+            @endphp
+        @endif
+
+        // Función para actualizar el contador del carrito en el sidebar
+        window.updateCartCount = function(count) {
+            const cartBadge = document.getElementById('cart-count-badge');
+            if (cartBadge) {
+                cartBadge.textContent = count;
+                cartBadge.style.display = count > 0 ? 'inline-flex' : 'none';
+            }
+        };
+
+        function confirmLogout(event) {
+            event.preventDefault();
+            Swal.fire({
+                title: '¿Estás seguro que quieres cerrar sesión?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Sí, cerrar sesión',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'rounded-xl shadow-2xl',
+                    confirmButton: 'px-6 py-3 rounded-xl font-bold',
+                    cancelButton: 'px-6 py-3 rounded-xl font-bold'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('logout-form').submit();
+                }
+            });
+        }
     </script>
     @yield('js')
 </body>

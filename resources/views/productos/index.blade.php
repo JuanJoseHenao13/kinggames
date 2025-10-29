@@ -3,48 +3,112 @@
 @section('title', 'Productos - Tienda de Videojuegos')
 
 @section('content')
-<div class="text-center mb-12">
-    <h1 class="text-4xl font-bold text-black dark:text-dorado">Nuestros Productos</h1>
-</div>
 
-<div class="mb-8 flex justify-center">
-    <form method="GET" action="{{ route('productos.index') }}" id="filter-form" class="flex flex-wrap items-center justify-center space-x-4 space-y-2">
-        <!-- Search Input -->
-        <div class="w-full md:w-auto">
-            <input type="text" name="search" id="search" placeholder="Buscar producto..." value="{{ request('search') }}"
-                class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-black dark:text-white focus:ring-2 focus:ring-dorado">
+<!-- Neon Gaming Background -->
+<div class="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-900 relative overflow-hidden">
+    <!-- Animated Neon Grid Background -->
+    <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMCwxMjgsMC4xKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30"></div>
+
+    <!-- Floating Neon Orbs -->
+    <div class="absolute top-20 left-10 w-32 h-32 bg-pink-500/20 rounded-full blur-xl animate-pulse"></div>
+    <div class="absolute top-40 right-20 w-24 h-24 bg-cyan-400/20 rounded-full blur-xl animate-pulse delay-1000"></div>
+    <div class="absolute bottom-32 left-1/4 w-40 h-40 bg-purple-500/15 rounded-full blur-xl animate-pulse delay-500"></div>
+    <div class="absolute bottom-20 right-10 w-28 h-28 bg-green-400/20 rounded-full blur-xl animate-pulse delay-1500"></div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Neon Header -->
+        <div class="text-center mb-16">
+            <div class="mb-6">
+                <span class="inline-block px-6 py-3 bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-400 text-black font-black text-lg tracking-wider rounded-full shadow-2xl animate-pulse border-2 border-pink-400/50">
+                    🎮 Bienvenidos a nuestros productos
+                </span>
+            </div>
+
+            <h1 class="text-6xl md:text-7xl font-black mb-6 leading-tight">
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-purple-400 to-cyan-400 animate-gradient drop-shadow-2xl">
+                    NUESTROS
+                </span>
+                <br>
+                <span class="text-white drop-shadow-2xl text-5xl md:text-6xl">
+                    PRODUCTOS
+                </span>
+            </h1>
+
+            <p class="text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+                Descubre la mejor colección de videojuegos con
+                <span class="text-pink-400 font-bold">estilos neon</span> y
+                <span class="text-cyan-400 font-bold">efectos futuristas</span>
+                <i class="bi bi-lightning-charge-fill text-yellow-400 ml-2 text-2xl"></i>
+            </p>
         </div>
 
-        <!-- Category Filter -->
-        <div class="w-full md:w-auto">
-            <label for="categoria" class="sr-only">Filtrar por categoría:</label>
-            <select name="categoria" id="categoria" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-black dark:text-white focus:ring-2 focus:ring-dorado">
-                <option value="">Todas las categorías</option>
-                @foreach($categorias as $categoria)
-                    <option value="{{ $categoria->id_categoria }}" {{ request('categoria') == $categoria->id_categoria ? 'selected' : '' }}>
-                        {{ $categoria->nombre_categoria }}
-                    </option>
-                @endforeach
-            </select>
+        <!-- Neon Filter Panel -->
+        <div class="mb-12 flex justify-center">
+            <div class="bg-black/40 backdrop-blur-xl rounded-3xl p-8 border-2 border-pink-500/30 shadow-2xl relative overflow-hidden">
+                <!-- Neon glow effect -->
+                <div class="absolute inset-0 bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-cyan-400/10 rounded-3xl"></div>
+
+                <form method="GET" action="{{ route('productos.index') }}" id="filter-form" class="relative flex flex-wrap items-center justify-center gap-6">
+                    <!-- Search Input -->
+                    <div class="group">
+                        <div class="relative">
+                            <i class="bi bi-search absolute left-4 top-1/2 transform -translate-y-1/2 text-pink-400 text-lg"></i>
+                            <input type="text" name="search" id="search" placeholder="🔍 Buscar juegos..." value="{{ request('search') }}"
+                                class="pl-12 pr-6 py-4 w-80 rounded-2xl border-2 border-pink-500/50 bg-black/60 text-white placeholder-pink-300
+                                       focus:ring-4 focus:ring-pink-400/50 focus:border-pink-400 focus:bg-black/80
+                                       transition-all duration-300 hover:border-pink-400/70 hover:shadow-lg hover:shadow-pink-400/20
+                                       text-lg font-medium backdrop-blur-sm">
+                        </div>
+                    </div>
+
+                    <!-- Category Filter -->
+                    <div class="group">
+                        <div class="relative">
+                            <i class="bi bi-tags-fill absolute left-4 top-1/2 transform -translate-y-1/2 text-purple-400 text-lg"></i>
+                            <select name="categoria" id="categoria"
+                                class="pl-12 pr-6 py-4 w-64 rounded-2xl border-2 border-purple-500/50 bg-black/60 text-white
+                                       focus:ring-4 focus:ring-purple-400/50 focus:border-purple-400 focus:bg-black/80
+                                       transition-all duration-300 hover:border-purple-400/70 hover:shadow-lg hover:shadow-purple-400/20
+                                       text-lg font-medium backdrop-blur-sm appearance-none">
+                                <option value="" class="bg-slate-900 text-white">🎯 Todas las categorías</option>
+                                @foreach($categorias as $categoria)
+                                    <option value="{{ $categoria->id_categoria }}" {{ request('categoria') == $categoria->id_categoria ? 'selected' : '' }} class="bg-slate-900 text-white">
+                                        {{ $categoria->nombre_categoria }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <i class="bi bi-chevron-down absolute right-4 top-1/2 transform -translate-y-1/2 text-purple-400 pointer-events-none"></i>
+                        </div>
+                    </div>
+
+                    <!-- Provider Filter -->
+                    <div class="group">
+                        <div class="relative">
+                            <i class="bi bi-building absolute left-4 top-1/2 transform -translate-y-1/2 text-cyan-400 text-lg"></i>
+                            <select name="proveedor" id="proveedor"
+                                class="pl-12 pr-6 py-4 w-64 rounded-2xl border-2 border-cyan-500/50 bg-black/60 text-white
+                                       focus:ring-4 focus:ring-cyan-400/50 focus:border-cyan-400 focus:bg-black/80
+                                       transition-all duration-300 hover:border-cyan-400/70 hover:shadow-lg hover:shadow-cyan-400/20
+                                       text-lg font-medium backdrop-blur-sm appearance-none">
+                                <option value="" class="bg-slate-900 text-white">🏢 Todos los proveedores</option>
+                                @foreach($proveedores as $proveedor)
+                                    <option value="{{ $proveedor->id_proveedor }}" {{ request('proveedor') == $proveedor->id_proveedor ? 'selected' : '' }} class="bg-slate-900 text-white">
+                                        {{ $proveedor->nombre_proveedor }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <i class="bi bi-chevron-down absolute right-4 top-1/2 transform -translate-y-1/2 text-cyan-400 pointer-events-none"></i>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
 
-        <!-- Provider Filter -->
-        <div class="w-full md:w-auto">
-            <label for="proveedor" class="sr-only">Filtrar por proveedor:</label>
-            <select name="proveedor" id="proveedor" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-black dark:text-white focus:ring-2 focus:ring-dorado">
-                <option value="">Todos los proveedores</option>
-                @foreach($proveedores as $proveedor)
-                    <option value="{{ $proveedor->id_proveedor }}" {{ request('proveedor') == $proveedor->id_proveedor ? 'selected' : '' }}>
-                        {{ $proveedor->nombre_proveedor }}
-                    </option>
-                @endforeach
-            </select>
+        <!-- Products Grid Container -->
+        <div id="product-list" class="relative">
+            @include('productos.partials.lista')
         </div>
-    </form>
-</div>
-
-<div id="product-list">
-    @include('productos.partials.lista')
+    </div>
 </div>
 
 <style>

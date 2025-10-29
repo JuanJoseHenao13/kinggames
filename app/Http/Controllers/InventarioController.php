@@ -12,6 +12,7 @@ class InventarioController extends Controller
     public function index(Request $request)
     {
         $proveedores = Proveedor::all();
+        $allProductos = Producto::all(); // Para el buscador global y selector
 
         $productos = collect();
 
@@ -31,9 +32,21 @@ class InventarioController extends Controller
             if ($request->ajax()) {
                 return view('admin.inventarios.partials.productos_table', compact('productos'))->render();
             }
+        } elseif ($request->has('producto_id')) {
+            // Si se selecciona un producto específico
+            $productoId = $request->input('producto_id');
+            $producto = Producto::with('inventario')->find($productoId);
+            if ($producto) {
+                $productos = collect([$producto]);
+            }
         }
 
-        return view('admin.inventarios.index', compact('proveedores', 'productos'));
+        return view('admin.inventarios.index', compact('proveedores', 'productos', 'allProductos'));
+    }
+
+    public function show($id)
+    {
+        return redirect()->route('inventarios.edit', $id);
     }
 
     public function create($productoId)
@@ -47,7 +60,7 @@ class InventarioController extends Controller
     {
         $request->validate([
             'id_producto' => 'required|exists:productos,id_producto',
-            'stock' => 'required|integer|min:0',
+            'cantidad_agregar' => 'required|integer|min:0',
             'stock_minimo' => 'required|integer|min:0',
         ]);
 
@@ -55,17 +68,25 @@ class InventarioController extends Controller
         $existingInventario = Inventario::where('id_producto', $request->id_producto)->first();
 
         if ($existingInventario) {
-            return redirect()->back()->with('error', 'Ya existe un registro de inventario para este producto.');
+            // Si existe, sumar la cantidad al stock actual
+            $existingInventario->stock += $request->cantidad_agregar;
+            $existingInventario->stock_minimo = $request->stock_minimo; // Actualizar stock mínimo si es necesario
+            $existingInventario->save();
+
+            $message = 'Inventario actualizado correctamente. Stock aumentado en ' . $request->cantidad_agregar . ' unidades.';
+        } else {
+            // Si no existe, crear nuevo inventario con la cantidad como stock inicial
+            Inventario::create([
+                'id_producto' => $request->id_producto,
+                'stock' => $request->cantidad_agregar,
+                'stock_minimo' => $request->stock_minimo,
+            ]);
+
+            $message = 'Inventario creado correctamente con ' . $request->cantidad_agregar . ' unidades iniciales.';
         }
 
-        Inventario::create([
-            'id_producto' => $request->id_producto,
-            'stock' => $request->stock,
-            'stock_minimo' => $request->stock_minimo,
-        ]);
-
         session(['last_proveedor_id' => $request->input('proveedor_id')]);
-        return redirect()->route('inventarios.index', ['proveedor_id' => $request->input('proveedor_id')])->with('success', 'Inventario creado correctamente.');
+        return redirect()->route('inventarios.index', ['proveedor_id' => $request->input('proveedor_id')])->with('success', $message);
     }
 
     public function update(Request $request, $id)
@@ -73,15 +94,15 @@ class InventarioController extends Controller
         $inventario = Inventario::findOrFail($id);
 
         $request->validate([
-            'stock' => 'required|integer|min:0',
+            'cantidad_agregar' => 'required|integer|min:0',
             'stock_minimo' => 'required|integer|min:0',
         ]);
 
-        $inventario->stock = $request->input('stock');
+        $inventario->stock += $request->input('cantidad_agregar');
         $inventario->stock_minimo = $request->input('stock_minimo');
         $inventario->save();
 
-        return redirect()->route('inventarios.index', ['proveedor_id' => $inventario->producto->id_proveedor])->with('success', 'Inventario actualizado correctamente.');
+        return redirect()->route('inventarios.index', ['proveedor_id' => $inventario->producto->id_proveedor])->with('success', 'Inventario actualizado correctamente. Stock aumentado en ' . $request->input('cantidad_agregar') . ' unidades.');
     }
 
     public function edit($id)

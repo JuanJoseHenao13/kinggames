@@ -146,6 +146,11 @@ class ProductoController extends Controller
 
     public function showPublic($id_producto)
     {
+        // Si el usuario está logueado como cliente, redirigir a la vista cliente
+        if (auth()->check() && auth()->user()->rol === 'cliente') {
+            return redirect()->route('cliente.productos.show', $id_producto);
+        }
+
         // Obtén el producto con el ID proporcionado (solo datos públicos)
         $producto = Producto::with(['categoria'])->findOrFail($id_producto);
 
@@ -174,6 +179,38 @@ class ProductoController extends Controller
 
         // Pasa el producto y el ID del video a la vista pública
         return view('productos.show-public', compact('producto', 'videoId'));
+    }
+
+    public function showCliente($id_producto)
+    {
+        // Obtén el producto con el ID proporcionado para cliente
+        $producto = Producto::with(['categoria'])->findOrFail($id_producto);
+
+        // Primero intenta obtener el video_id de la base de datos
+        $videoId = $producto->video_id;
+
+        // Si no hay video_id en la base de datos, usa el array de respaldo para productos existentes
+        if (!$videoId) {
+            $videos = [
+                1 => 'twNmM6ntvMs',
+                2  => 'vovkzbtYBC8',
+                3  => 'kbbB-HMZ6_4',
+                4  => 'InoAU5wUFcE',
+                5  => 'oKSGpvf391s',
+                6  => 'QdBZY2fkU-0',
+                7  => 'cXSpEmPmbfc',
+                8  => 'iN8pV8NdrvU',
+                9  => '-58EAiGNveQ',
+                10 => 'UAO2urG23S4',
+                11 => '1RC1yxqTTd8',
+                12 => '6YWlWzs1Prs',
+                13 => ' ',
+            ];
+            $videoId = $videos[$producto->id_producto] ?? null;
+        }
+
+        // Pasa el producto y el ID del video a la vista de cliente
+        return view('cliente.productos.show', compact('producto', 'videoId'));
     }
 
     public function edit(Producto $producto)

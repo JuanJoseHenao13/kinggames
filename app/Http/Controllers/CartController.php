@@ -59,8 +59,8 @@ class CartController extends Controller
 
             return response()->json([
                 'success' => true,
-                'subtotal' => number_format($subtotal, 2),
-                'total' => number_format($total, 2),
+                'subtotal' => number_format($subtotal, 0, ',', '.'),
+                'total' => number_format($total, 0, ',', '.'),
                 'cartCount' => \Cart::getTotalQuantity()
             ]);
         } catch (\Exception $e) {
@@ -80,7 +80,7 @@ class CartController extends Controller
                 'success'   => true,
                 'message'   => 'Producto eliminado del carrito.',
                 'cartCount' => \Cart::getTotalQuantity(),
-                'total'     => number_format(\Cart::getTotal(), 2)
+                'total'     => number_format(\Cart::getTotal(), 0, ',', '.')
             ]);
         }
 

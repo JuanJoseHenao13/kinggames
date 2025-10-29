@@ -9,11 +9,8 @@ export default defineConfig({
         }),
     ],
     server: {
-        host: '127.0.0.1',
-        port: 8000,
-        cors: {
-            origin: ['http://localhost:8000', 'http://127.0.0.1:8000'],
-            credentials: true,
-        },
+        cors: true,
     },
+
+
 });

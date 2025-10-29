@@ -65,6 +65,14 @@ class UsuarioController extends Controller
     }
 
     /**
+     * Display the specified user.
+     */
+    public function show(Usuario $usuario)
+    {
+        return view('usuarios.show', compact('usuario'));
+    }
+
+    /**
      * Show the form for editing the specified user.
      */
     public function edit(Usuario $usuario)

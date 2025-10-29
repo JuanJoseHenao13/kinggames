@@ -31,11 +31,11 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('usuarios.index') }}"
-                                       class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold {{ request()->routeIs('usuarios.*') ? 'bg-blue-50 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
-                                        <i class="bi bi-people-fill h-6 w-6 shrink-0"></i>
-                                        Usuarios
-                                    </a>
+                                <a href="{{ route('usuarios.index') }}"
+                                   class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold {{ request()->routeIs('usuarios.*') ? 'bg-blue-50 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
+                                    <i class="bi bi-people-fill h-6 w-6 shrink-0"></i>
+                                    Usuarios
+                                </a>
                                 </li>
                                 <li>
                                     <a href="{{ route('productos.index') }}"
@@ -113,14 +113,14 @@
                             Sitio
                         </a>
                         <!-- Logout -->
-                        <form action="{{ route('logout') }}" method="POST" class="inline">
+                        <form action="{{ route('logout') }}" method="POST" class="inline" id="logout-form">
                             @csrf
-                            <button type="submit"
-                                    class="inline-flex items-center gap-x-1.5 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
-                                <i class="bi bi-box-arrow-right -ml-0.5 h-4 w-4"></i>
-                                Logout
-                            </button>
                         </form>
+                        <button type="button" onclick="confirmLogout(event)"
+                                class="inline-flex items-center gap-x-1.5 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
+                            <i class="bi bi-box-arrow-right -ml-0.5 h-4 w-4"></i>
+                            Logout
+                        </button>
                     </div>
                 </div>
             </div>
@@ -237,6 +237,48 @@
                 mobileOverlay.classList.add('hidden');
             }
         });
+
+        // Welcome notification
+        @if(session('welcome_user'))
+            Swal.fire({
+                title: '¡Bienvenido a KinGGameS!',
+                text: 'Hola {{ session("welcome_user") }}, ¡disfruta de tu experiencia gaming!',
+                icon: 'success',
+                confirmButtonColor: '#10b981',
+                background: '#ffffff',
+                color: '#000000',
+                customClass: {
+                    popup: 'rounded-2xl shadow-2xl',
+                    confirmButton: 'px-6 py-3 rounded-xl font-bold'
+                }
+            });
+            @php
+                session()->forget('welcome_user');
+            @endphp
+        @endif
+
+        function confirmLogout(event) {
+            event.preventDefault();
+            Swal.fire({
+                title: '¿Estás seguro que quieres cerrar sesión?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Sí, cerrar sesión',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'rounded-xl shadow-2xl',
+                    confirmButton: 'px-6 py-3 rounded-xl font-bold',
+                    cancelButton: 'px-6 py-3 rounded-xl font-bold'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('logout-form').submit();
+                }
+            });
+        }
     </script>
     @yield('js')
 </body>
