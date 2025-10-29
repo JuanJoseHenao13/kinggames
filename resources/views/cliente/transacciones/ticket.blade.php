@@ -1,8 +1,10 @@
+{{-- Plantilla HTML para el ticket de transacción --}}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Factura #{{ $transaccion->id_transaccion }}</title>
+    {{-- Estilos CSS para el ticket de factura --}}
     <style>
         * {
             margin: 0;
@@ -29,7 +31,7 @@
             color: #000000;
         }
 
-        /* Header profesional */
+        {{-- Header profesional --}}
         .header {
             background: linear-gradient(135deg, #000000 0%, #3b82f6 50%, #1e40af 100%);
             padding: 40px;
@@ -98,12 +100,12 @@
             color: #000000;
         }
 
-        /* Contenido principal */
+        {{-- Contenido principal --}}
         .main-content {
             padding: 40px;
         }
 
-        /* Sección de información */
+        {{-- Sección de información --}}
         .info-section {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -130,8 +132,6 @@
             gap: 8px;
         }
 
-
-
         .info-box p {
             margin: 8px 0;
             color: #000000;
@@ -145,7 +145,7 @@
             min-width: 90px;
         }
 
-        /* Sección de proveedores */
+        {{-- Sección de proveedores --}}
         .proveedor-section {
             margin-bottom: 40px;
         }
@@ -185,7 +185,7 @@
             font-weight: 600;
         }
 
-        /* Tabla de productos */
+        {{-- Tabla de productos --}}
         .productos-section {
             margin-bottom: 30px;
         }
@@ -253,7 +253,7 @@
             border-bottom: none;
         }
 
-        /* Resumen de totales */
+        {{-- Resumen de totales --}}
         .totales-section {
             display: flex;
             justify-content: flex-end;
@@ -305,7 +305,7 @@
             font-size: 24px;
         }
 
-        /* Footer */
+        {{-- Footer --}}
         .footer {
             background: #f8f9fa;
             padding: 30px 40px;
@@ -326,7 +326,7 @@
             font-size: 16px;
         }
 
-        /* Notas adicionales */
+        {{-- Notas adicionales --}}
         .notas-section {
             background: #fff8e1;
             padding: 20px;
@@ -349,7 +349,7 @@
             line-height: 1.6;
         }
 
-        /* Estilos de impresión */
+        {{-- Estilos de impresión --}}
         @media print {
             body {
                 background: #ffffff;
@@ -370,7 +370,7 @@
             }
         }
 
-        /* Responsive */
+        {{-- Responsive --}}
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
@@ -407,7 +407,7 @@
 </head>
 <body>
     <div class="factura-container">
-        <!-- Header -->
+        {{-- Header --}}
         <div class="header">
             <div class="header-content">
                 <div class="factura-info">

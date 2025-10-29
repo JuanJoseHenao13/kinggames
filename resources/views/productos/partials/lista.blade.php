@@ -1,20 +1,25 @@
+{{-- Cuadrícula de productos --}}
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    {{-- Itera sobre cada producto --}}
     @foreach($productos as $producto)
+        {{-- Tarjeta del producto --}}
         <div class="group bg-black/70 backdrop-blur-xl rounded-3xl shadow-2xl hover:shadow-pink-500/25 overflow-hidden border-2 border-pink-500/40 transition-all duration-700 hover:-translate-y-6 hover:border-pink-400/70 hover:shadow-2xl relative will-change-transform">
-            <!-- Enhanced neon glow effect -->
+            {{-- Efecto de brillo neón mejorado --}}
             <div class="absolute inset-0 bg-gradient-to-br from-pink-500/8 via-purple-500/8 to-cyan-400/8 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
 
-            <!-- Animated border glow -->
+            {{-- Borde animado con brillo --}}
             <div class="absolute inset-0 rounded-3xl border-2 border-transparent group-hover:border-pink-400/30 transition-all duration-700 group-hover:shadow-[0_0_30px_rgba(236,72,153,0.3)]"></div>
 
-            <!-- Imagen del producto -->
+            {{-- Imagen del producto --}}
             <div class="relative overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900 rounded-t-3xl">
+                {{-- Verifica si existe imagen --}}
                 @if($producto->imagen && file_exists(public_path('storage/' . $producto->imagen)))
                     <img src="{{ asset('storage/' . $producto->imagen) }}"
                          alt="{{ $producto->nombre }}"
                          class="w-full h-56 object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110 will-change-transform">
-                    <!-- Enhanced neon overlay on hover -->
+                    {{-- Superposición neón mejorada al hacer hover --}}
                     <div class="absolute inset-0 bg-gradient-to-t from-pink-500/25 via-purple-500/10 to-cyan-400/15 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                {{-- Placeholder si no hay imagen --}}
                 @else
                     <div class="w-full h-56 flex items-center justify-center bg-gradient-to-br from-slate-800 to-slate-900 relative">
                         <div class="absolute inset-0 bg-gradient-to-br from-pink-500/10 to-cyan-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-t-3xl"></div>
@@ -27,41 +32,41 @@
 
 
 
-                <!-- New Product Badge -->
+                {{-- Badge de producto nuevo --}}
                 @if($producto->created_at->diffInDays(now()) < 30)
                     <div class="absolute top-4 left-4 bg-gradient-to-r from-red-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-black shadow-2xl border border-red-400/50 animate-pulse">
                         <i class="bi bi-fire mr-1"></i>NUEVO
                     </div>
                 @endif
 
-                <!-- Category Badge -->
+                {{-- Badge de categoría --}}
                 <div class="absolute bottom-4 left-4 bg-black/80 backdrop-blur-sm text-cyan-400 px-3 py-1 rounded-full text-xs font-bold border border-cyan-400/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                     {{ Str::upper($producto->categoria->nombre_categoria) }}
                 </div>
             </div>
 
-            <!-- Contenido del producto -->
+            {{-- Contenido del producto --}}
             <div class="relative p-6 bg-black/50 backdrop-blur-sm">
-                <!-- Título -->
+                {{-- Título --}}
                 <h2 class="text-xl font-black mb-4 text-white line-clamp-2 group-hover:text-pink-400 transition-all duration-500 drop-shadow-lg">
                     <span class="bg-clip-text text-transparent bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400 group-hover:from-pink-300 group-hover:via-purple-300 group-hover:to-cyan-300 transition-all duration-500">
                         {{ $producto->nombre }}
                     </span>
                 </h2>
 
-                <!-- Descripción -->
+                {{-- Descripción --}}
                 <p class="text-gray-300 mb-6 text-sm line-clamp-3 leading-relaxed group-hover:text-gray-200 transition-colors duration-500">
                     {{ Str::limit($producto->descripcion, 120) }}
                 </p>
 
-                <!-- Estado y Precio -->
+                {{-- Estado y Precio --}}
                 <div class="flex justify-between items-center mb-6">
                     <div>
                         <span class="text-4xl font-black text-white">
                             ${{ number_format($producto->precio, 0, ',', '.') }}
                         </span>
-                        <!-- Removed "PRECIO NEON" label and neon effect as per user request -->
-                        <!-- <div class="text-xs text-cyan-400 font-bold mt-1 tracking-wider">PRECIO NEON</div> -->
+                        {{-- Etiqueta "PRECIO NEON" removida según solicitud del usuario --}}
+                        {{-- <div class="text-xs text-cyan-400 font-bold mt-1 tracking-wider">PRECIO NEON</div> --}}
                     </div>
                     <div class="text-right">
                         <span class="inline-block px-3 py-1 text-xs font-bold rounded-full {{ $producto->estado === 'activo' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30' }} transition-all duration-300">
@@ -70,8 +75,9 @@
                     </div>
                 </div>
 
-                <!-- Botones de acción -->
+                {{-- Botones de acción --}}
                 <div class="flex flex-col sm:flex-row gap-4">
+                    {{-- Botón para ver detalles --}}
                     <a href="{{ request()->routeIs('cliente.*') ? route('cliente.productos.show', $producto) : route('productos.show-public', $producto) }}"
                        class="flex-1 inline-flex items-center justify-center bg-gradient-to-r from-purple-600 to-pink-600 text-white font-black py-4 px-6 rounded-2xl
                               hover:from-purple-500 hover:to-pink-500 transition-all duration-500 shadow-xl hover:shadow-purple-500/40
@@ -80,6 +86,7 @@
                         <span class="drop-shadow-lg">VER DETALLES</span>
                     </a>
 
+                    {{-- Formulario para agregar al carrito --}}
                     <form action="{{ route('cart.add', $producto) }}" method="POST" class="add-to-cart-form flex-1">
                         @csrf
                         <button type="submit"
@@ -95,50 +102,54 @@
                 </div>
             </div>
 
-            <!-- Enhanced Neon bottom border -->
+            {{-- Borde inferior neón mejorado --}}
             <div class="h-3 bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-400 shadow-lg shadow-pink-500/60 group-hover:shadow-pink-400/80 transition-shadow duration-500"></div>
+        {{-- Cierra la tarjeta del producto --}}
         </div>
+    {{-- Cierra el bucle de productos --}}
     @endforeach
+{{-- Cierra la cuadrícula de productos --}}
 </div>
 
-<!-- Paginación -->
+{{-- Paginación --}}
 <div class="mt-12 mb-8 flex justify-center">
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 border border-gray-200 dark:border-gray-700">
         {{ $productos->links() }}
     </div>
 </div>
 
+{{-- Estilos personalizados para la paginación --}}
 <style>
-    /* Estilos personalizados para la paginación */
+    {{-- Estilos para la paginación --}}
     .pagination {
         @apply flex items-center space-x-2;
     }
-    
+
     .pagination a,
     .pagination span {
         @apply px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-300;
     }
-    
+
     .pagination a {
         @apply bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-blue-600 hover:to-cyan-600 hover:text-white hover:shadow-lg;
     }
-    
+
     .pagination .active span {
         @apply bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg;
     }
-    
+
     .pagination .disabled span {
         @apply bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-600 cursor-not-allowed;
     }
-    
-    /* Line clamp utility */
+
+    {{-- Utilidad para limitar líneas de texto --}}
     .line-clamp-2 {
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
-    
+
     .line-clamp-3 {
         display: -webkit-box;
         -webkit-line-clamp: 3;
@@ -147,25 +158,29 @@
     }
 </style>
 
+{{-- Script para manejar la funcionalidad de agregar al carrito --}}
 <script>
+    {{-- Espera a que el DOM esté cargado --}}
     document.addEventListener('DOMContentLoaded', function () {
         const addToCartForms = document.querySelectorAll('.add-to-cart-form');
         const cartCountBadge = document.querySelector('#cart-count-badge');
 
+        {{-- Itera sobre cada formulario de agregar al carrito --}}
         addToCartForms.forEach(form => {
             form.addEventListener('submit', function (event) {
                 event.preventDefault();
 
                 const button = form.querySelector('button[type="submit"]');
                 const originalHTML = button.innerHTML;
-                
-                // Deshabilitar botón y mostrar loading
+
+                {{-- Deshabilitar botón y mostrar loading --}}
                 button.disabled = true;
                 button.innerHTML = '<i class="bi bi-hourglass-split animate-spin mr-2"></i>Agregando...';
 
                 const formData = new FormData(form);
                 const url = form.action;
 
+                {{-- Realizar petición AJAX --}}
                 fetch(url, {
                     method: 'POST',
                     headers: {
@@ -178,7 +193,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // SweetAlert moderno
+                        {{-- SweetAlert moderno para éxito --}}
                         Swal.fire({
                             icon: 'success',
                             title: '¡Agregado al Carrito! 🎮',
@@ -195,29 +210,30 @@
                                 popup: 'rounded-xl shadow-2xl',
                             }
                         });
-                        
-                        // Actualizar contador del carrito
+
+                        {{-- Actualizar contador del carrito --}}
                         if (cartCountBadge && data.cartCount) {
                             cartCountBadge.textContent = data.cartCount;
                             cartCountBadge.style.display = 'flex';
-                            
-                            // Animación de pulso
+
+                            {{-- Animación de pulso --}}
                             cartCountBadge.classList.add('animate-ping');
                             setTimeout(() => {
                                 cartCountBadge.classList.remove('animate-ping');
                             }, 1000);
                         }
-                        
-                        // Restaurar botón con efecto de éxito
+
+                        {{-- Restaurar botón con efecto de éxito --}}
                         button.classList.add('!bg-green-500', '!border-green-500');
                         button.innerHTML = '<i class="bi bi-check-circle-fill mr-2"></i>¡Agregado!';
-                        
+
                         setTimeout(() => {
                             button.classList.remove('!bg-green-500', '!border-green-500');
                             button.innerHTML = originalHTML;
                             button.disabled = false;
                         }, 2000);
                     } else {
+                        {{-- SweetAlert para error --}}
                         Swal.fire({
                             icon: 'error',
                             title: 'Oops...',
@@ -229,14 +245,15 @@
                                 popup: 'rounded-xl shadow-2xl',
                             }
                         });
-                        
-                        // Restaurar botón
+
+                        {{-- Restaurar botón --}}
                         button.innerHTML = originalHTML;
                         button.disabled = false;
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
+                    {{-- SweetAlert para error de conexión --}}
                     Swal.fire({
                         icon: 'error',
                         title: 'Error de Conexión',
@@ -248,12 +265,13 @@
                             popup: 'rounded-xl shadow-2xl',
                         }
                     });
-                    
-                    // Restaurar botón
+
+                    {{-- Restaurar botón --}}
                     button.innerHTML = originalHTML;
                     button.disabled = false;
                 });
             });
         });
     });
+{{-- Cierra el script --}}
 </script>
